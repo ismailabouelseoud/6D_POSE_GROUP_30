@@ -1,1 +1,14 @@
-
+# FILE: requirements.txt
+torch
+torchvision
+numpy
+opencv-python
+PyYAML
+ruamel.yaml
+ultralytics
+open3d
+trimesh
+matplotlib
+scikit-learn
+tqdm
+plotly

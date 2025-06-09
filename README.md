@@ -1,3 +1,3 @@
-# MLDL25 - Lab3: Setup a project from scratch
+# 6D POSE GROUP 30 
 
-Solution example: https://github.com/ardaerendogru/l3
+First draft of git hub repository, please feel free to inculde more thing and clean it out 

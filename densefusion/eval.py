@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 from .config import config
 from .dataset import DenseFusionDataset
-from .utils import load_yaml_file, compute_add_metrics_with_thresholds, compute_add_visualization_fixed
+from .utils import load_yaml_file, compute_add_metrics_with_thresholds
 
 
 def detect_and_estimate_pose(yolo_model, pose_model, dataset, rgb_path, depth_path=None):
@@ -129,6 +129,12 @@ def run_complete_evaluation():
     print("Running complete evaluation (helper)")
     yolo_model = None
     dataset_config = load_yaml_file(config.DATA_YAML_PATH)
+    if dataset_config is None:
+        raise FileNotFoundError(
+            f"Dataset config not found at: {config.DATA_YAML_PATH}\n"
+            f"Please download the dataset from: https://drive.google.com/drive/u/0/folders/19ivHpaKm9dOrr12fzC8IDFczWRPFxho7\n"
+            f"Then update LINEMOD_ROOT in densefusion/config.py to point to your downloaded dataset."
+        )
     test_dataset = DenseFusionDataset(dataset_config, split='val')
     pose_model = None
     metrics = evaluate_model_comprehensive(yolo_model, pose_model, test_dataset, {})

@@ -4,12 +4,13 @@ import numpy as np
 
 class Config:
     def __init__(self):
-        # Paths - update as needed
-        self.LINEMOD_ROOT = "/content/datasets/linemod/Linemod_preprocessed_yolo_2"
+        # Paths - UPDATE THESE to point to your downloaded dataset
+        # Download dataset from: https://drive.google.com/drive/u/0/folders/19ivHpaKm9dOrr12fzC8IDFczWRPFxho7
+        self.LINEMOD_ROOT = os.path.expanduser("~/Downloads/Linemod_preprocessed_yolo_2")  # MODIFY THIS PATH
         self.DATA_YAML_PATH = os.path.join(self.LINEMOD_ROOT, 'data.yaml')
-        self.PLY_MODELS_DIR = "/content/datasets/linemod/Linemod_preprocessed_yolo_2/pose_models/models"
-        self.DIAMETER_INFO_PATH = "/content/datasets/linemod/Linemod_preprocessed_yolo_2/pose_models/models_info.yml"
-        self.MODELS_SAVE_DIR = "/content/models"
+        self.PLY_MODELS_DIR = os.path.join(self.LINEMOD_ROOT, 'pose_models/models')
+        self.DIAMETER_INFO_PATH = os.path.join(self.LINEMOD_ROOT, 'pose_models/models_info.yml')
+        self.MODELS_SAVE_DIR = os.path.expanduser("~/Downloads/densefusion_models")  # MODIFY THIS PATH
         self.CHECKPOINTS_DIR = os.path.join(self.LINEMOD_ROOT, 'checkpoints')
 
         # Device

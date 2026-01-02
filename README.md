@@ -1,29 +1,91 @@
-# Transformer-Enhanced 6D Pose Estimation
+---
+# Transformer-Enhanced DenseFusion for 6D Object Pose Estimation
 
-This repository implements a modular, production-oriented pipeline for 6D object pose estimation from aligned RGB–D input. It reproduces a DenseFusion‑style architecture and experiments with a transformer‑based fusion module (custom Multi‑Head Self‑Attention) to combine global RGB and point‑cloud features.
+This repository implements a Transformer‑enhanced 6D object pose estimation pipeline inspired by DenseFusion, evaluated on the LINEMOD dataset. It compares a baseline MLP fusion against a Transformer‑based fusion module that enables attention‑driven interaction between RGB and geometric features.
 
-What this code does
-- Prepares and loads LINEMOD‑style RGB‑D datasets and supports YOLO‑format detections.
-- Encodes RGB images and point clouds into learned feature representations.
-- Fuses RGB and point‑cloud features using either a transformer‑based fuser or a baseline MLP fusion.
-- Regresses 6D object pose (translation + rotation) and a per‑prediction confidence score.
-- Evaluates performance with ADD / ADD‑S metrics and provides visualization utilities for qualitative inspection.
+The full experimental report is attached as a PDF in the repository (filename: `s291365_s338570_s345149_s337049_Abouelseoud_Intini_Parisini_Ciorra.pdf`).
 
-What is achieved
-- A clean, importable Python package (`densefusion/`) split from the original notebook for easier review and reuse.
-- A compact, from‑scratch Multi‑Head Self‑Attention and `TransformerFuser` implementation for transparent attention-based fusion.
-- Reproducible training, evaluation, and visualization scripts with a simple entrypoint for quick demos.
+Overview
 
-Repository components (brief)
-- `densefusion/config.py` — configuration, dataset paths, and camera intrinsics.
-- `densefusion/dataset.py` — dataset loader, patch extraction, and depth→point‑cloud utilities.
-- `densefusion/models.py` & `densefusion/core_models/` — encoders, fusion modules, and pose regression head.
-- `densefusion/loss.py` — loss functions and ADD / ADD‑S metric helpers.
-- `densefusion/segmentation.py` — Mask R‑CNN integration for segmentation masks.
-- `densefusion/train.py`, `densefusion/eval.py`, `densefusion/visualize.py` — training, evaluation, and visualization utilities.
-- `run_pipeline.py` — simple CLI to run train / eval flows.
+This code predicts 6D object poses (3D translation + 3D rotation) from aligned RGB‑D input. The pipeline is organized for reproducibility and reviewer clarity: detection → segmentation → feature extraction → fusion → pose regression.
 
-See the attached report for detailed experimental settings, numeric results, and figures.
+What the code does (high level)
+
+- Prepares LINEMOD‑style RGB‑D data and supports YOLO‑format detections.
+- Encodes RGB and point‑cloud data into compact learned embeddings.
+- Fuses modalities using either an MLP baseline or a Transformer‑based fuser (custom MHSA implementation included).
+- Regresses object pose and a confidence score; evaluates with ADD / ADD‑S metrics.
+
+Pipeline (brief)
+
+1. Detection: YOLOv11 (fine‑tuned) → bounding boxes.
+2. Segmentation: Mask R‑CNN (ResNet50) → refined masks.
+3. Feature extraction: CNN (RGB) + PointNet (depth→points).
+4. Fusion: MLP vs. Transformer (learnable [CLS], positional embeddings, multi‑layer encoder).
+5. Pose head: MLP regresses translation, quaternion, and confidence.
+
+Training & evaluation (summary)
+
+- Framework: PyTorch; Optimizer: AdamW; LR: 1e‑4; Batch size: 12; Epochs: 15.
+- Loss: weighted sum of ADD loss, confidence BCE, and translation regularizer:
+
+$$L_{total} = \lambda_{ADD} L_{ADD} + \lambda_{conf} L_{conf} + 0.1 L_{reg}$$
+
+- Metrics: ADD, ADD‑S (symmetric), success rates at 2/5/10cm and relative thresholds.
+
+Results highlights
+
+- Both fusion strategies achieve sub‑decimeter accuracy under the limited training regime.
+- With 15 epochs the MLP baseline slightly outperformed the Transformer; this is likely due to limited compute and tuning.
+- The Transformer variant trained stably and shows promise with further training and tuning.
+
+Limitations & next steps
+
+- Limited training time and GPU budget.
+- Global, single‑descriptor fusion (no pixel‑wise refinement).
+- Future: longer training, pixel‑wise fusion, evaluation on more datasets, and a pose refinement stage.
+
+Quick start
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Update `densefusion/config.py` with your dataset and model paths (`LINEMOD_ROOT`, `PLY_MODELS_DIR`, `MODELS_SAVE_DIR`), then run:
+
+```bash
+python run_pipeline.py        # train + eval (default)
+python -c "from run_pipeline import main; main('train')"   # train only
+python -c "from run_pipeline import main; main('eval')"    # eval only
+```
+
+Repository layout (key files)
+
+- `densefusion/` — core package (config, dataset, models, loss, train, eval, visualize)
+- `densefusion/core_models/` — compact MHSA & Transformer fuser (from‑scratch implementation)
+- `run_pipeline.py` — entrypoint to run train/eval flows
+- `GROUP_30_DENSEFUSION_TRS.ipynb` — original notebook (kept for reproducibility)
+
+Authors
+
+- Ismail Abouelseoud
+- Valeria Intini
+- Gabriele Parisini
+- Edoardo Ciorra
+
+CV blurb
+
+Include this project on your CV for CV/robotics/APPLIED ML roles. Example line:
+
+> Implemented a 6D object pose estimation pipeline on LINEMOD, extending DenseFusion with Transformer‑based RGB–depth fusion; evaluated using ADD / ADD‑S metrics.
+
+Notes
+
+- The attached report contains detailed tables and figures. If you want, I can extract key paragraphs or produce a `REPORT_SUMMARY.md` quoting the report — upload the PDF into the workspace or tell me which sections to extract.
+
+---
 
 What changed in this cleanup
 - Notebook → package: `densefusion/` contains modular code you can import and test.

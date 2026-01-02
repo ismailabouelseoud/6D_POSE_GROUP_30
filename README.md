@@ -78,23 +78,43 @@ Authors
 - Ismail Abouelseoud
 - Valeria Intini
 - Gabriele Parisini
--- Edoardo Ciorra
+- Edoardo Ciorra
 
 Repository layout (important files)
-- `densefusion/`
-  - `config.py` — project configuration (paths, camera intrinsics, hyperparams)
-  - `utils.py` — helpers: bbox conversions, ADD/ADD-S, pose utilities
-  - `models.py` — original DenseFusion-style model definitions (compatible with custom fuser)
-  - `dataset.py` — `DenseFusionDataset` (rgb/depth loading, depth→pointcloud)
-  - `loss.py` — `DenseFusionLoss` (ADD/ADD-S + confidence)
-  - `segmentation.py` — Mask R-CNN wrapper for segmentation refinement
-  - `train.py`, `eval.py`, `visualize.py` — pipeline helpers
-  - `core_models/` — compact reviewer-focused models (custom MHSA & small pose estimator)
-- `run_pipeline.py` — simple script to run training/eval
-- `GROUP_30_DENSEFUSION_TRS.ipynb` — original notebook (kept for reproducibility)
-- `requirements.txt` — minimal dependencies list
 
-Abstract (short)
+Top-level
+
+- `README.md` — project overview, quickstart, results
+- `requirements.txt` — minimal Python dependencies
+- `run_pipeline.py` — small CLI to run training / evaluation
+- `s291365_s338570_s345149_s337049_Abouelseoud_Intini_Parisini_Ciorra.pdf` — full project report
+- `jupyter_notebook/GROUP_30_DENSEFUSION_TRS.ipynb` — original exploratory notebook
+- `results_table.png` — results table image used in README
+- `YOLOv11_finetuning/`
+
+  - `args.yaml` — training arguments used for YOLO finetuning
+  - `results.csv`, `results.png`, `PR_curve.png`, `F1_curve.png`, `confusion_matrix.png` — finetuning artifacts
+  - `best.pt`, `last.pt` — trained YOLO weights
+  - `visualizations/` — label and batch images used for reporting
+
+`densefusion/` (Python moduler implimentation)
+
+- `__init__.py`
+- `config.py` — paths, camera intrinsics, hyperparameters
+- `dataset.py` — `DenseFusionDataset`, patch extraction, depth→pointcloud helpers
+- `models.py` — DenseFusion-style model wrappers and fuser hooks
+- `loss.py` — losses and ADD / ADD‑S helpers
+- `utils.py` — geometry, metrics, YAML/path helpers
+- `train.py` — training loop, checkpointing
+- `eval.py` — evaluation loop and metric aggregation
+- `visualize.py` — visualization helpers
+- `segmentation.py` — Mask R‑CNN wrapper for segmentation refinement
+- `core_models/` — reviewer-focused implementations
+
+  - `rgb_encoder.py`, `pointnet.py`, `pose_estimator.py`, `transformer_fusion.py`
+
+
+Abstract 
 ----------------
 This project explores transformer-enhanced fusion for DenseFusion-style 6D pose estimation on the LINEMOD dataset. The key contribution is replacing the original concatenation/MLP fusion with a small transformer encoder that fuses RGB and point-cloud global features using a learned CLS token and positional embeddings. The repository includes utilities for dataset conversion, a segmentation refinement module (Mask R-CNN), a pose regressor, and evaluation with ADD / ADD-S metrics.
 
@@ -128,21 +148,6 @@ python -c "from run_pipeline import main; main('train')"
 python -c "from run_pipeline import main; main('eval')"
 ```
 
-Smoke test for the custom transformer (quick)
--------------------------------------------
-This runs a forward pass through the small `PoseEstimator` that uses the custom MHSA-based fuser. It demonstrates the transformer implementation in isolation and is suitable for showing an interviewer you implemented attention from scratch.
-
-```bash
-python - <<'PY'
-from densefusion.core_models import PoseEstimator
-import torch
-model = PoseEstimator(use_transformer=True)
-dummy_rgb = torch.randn(2, 3, 128, 128)
-dummy_pts = torch.randn(2, 500, 3)
-pose, conf = model(dummy_rgb, dummy_pts)
-print('pose', pose.shape, 'conf', conf.shape)
-PY
-```
 
 Architecture summary
 --------------------
@@ -159,7 +164,7 @@ Integration with YOLO
 ---------------------
 - The original notebook included dataset conversion to a YOLO-format dataset and fine-tuning of a YOLOv11 model. The modular code expects a YOLO labels/images structure and can load a trained YOLO model for detection during evaluation.
 
-How the attached report is used
+FUll report
 ------------------------------
 - The report attached with this repository contains detailed experimental settings, numerical results, and figures. 
 

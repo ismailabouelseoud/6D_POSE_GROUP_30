@@ -1,4 +1,3 @@
----
 # Transformer-Enhanced DenseFusion for 6D Object Pose Estimation
 
 GitHub repository containing the code for 6D pose estimation project, MLDL.  
@@ -75,9 +74,7 @@ Authors
 - Ismail Abouelseoud
 - Valeria Intini
 - Gabriele Parisini
-- Edoardo Ciorra
-
----
+-- Edoardo Ciorra
 
 Repository layout (important files)
 - `densefusion/`

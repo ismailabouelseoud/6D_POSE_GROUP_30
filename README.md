@@ -40,6 +40,10 @@ Results highlights
 - With 15 epochs the MLP baseline slightly outperformed the Transformer; this is likely due to limited compute and tuning.
 - The Transformer variant trained stably and shows promise with further training and tuning.
 
+![Training results comparison: Transformer vs MLP](docs/results_table.png)
+
+*Figure — Training results table (Mean ADD, success rates) comparing Transformer and MLP fusion.*
+
 Limitations & next steps
 
 - Limited training time and GPU budget.
@@ -94,7 +98,7 @@ Abstract (short)
 ----------------
 This project explores transformer-enhanced fusion for DenseFusion-style 6D pose estimation on the LINEMOD dataset. The key contribution is replacing the original concatenation/MLP fusion with a small transformer encoder that fuses RGB and point-cloud global features using a learned CLS token and positional embeddings. The repository includes utilities for dataset conversion, a segmentation refinement module (Mask R-CNN), a pose regressor, and evaluation with ADD / ADD-S metrics.
 
-Primary contributions (what to highlight in applications)
+Primary contributions 
 - Custom Multi-Head Self-Attention implemented from scratch (not just `nn.Transformer`) to make attention explicit and reviewable.
 - Compact TransformerFuser: uses a learnable CLS token + positional embeddings to fuse RGB and point-cloud features.
 - Clean separation of concerns: dataset, model, loss, training, evaluation, visualization.

@@ -251,7 +251,7 @@ The pipeline supports YOLOv11-based detection:
 
 For detailed experimental settings, numerical results, and comprehensive analysis, refer to the full technical report:
 
-📄 **Full Report**: `report_final.pdf`
+📄 **Full Report**: `report/report_final.pdf`
 
 This report includes:
 - Detailed methodology and implementation choices
